@@ -14,7 +14,16 @@ export async function handleGetCounterparties(params: z.infer<typeof getCounterp
   query.set("offset", String(params.offset));
   if (params.search) query.set("search", params.search);
   if (params.filter_inn) query.set("filter", `inn=${params.filter_inn}`);
-
   const result = await moyskladGet(`/entity/counterparty?${query.toString()}`);
-  return JSON.stringify(result, null, 2);
+  return formatCounterparties(result);
+}
+
+function formatCounterparties(raw: unknown): string {
+  const data = raw as { meta: { size: number }; rows: Array<Record<string, unknown>> };
+  return JSON.stringify({
+    total: data.meta?.size,
+    counterparties: (data.rows ?? []).map((c) => ({
+      id: c.id, name: c.name, phone: c.phone, email: c.email, inn: c.inn, companyType: c.companyType,
+    })),
+  }, null, 2);
 }

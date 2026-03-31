@@ -1,0 +1,28 @@
+name: moysklad-mcp
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      MOYSKLAD_LOGIN:
+        type: string
+        description: Login for MoySklad (email or login)
+      MOYSKLAD_PASSWORD:
+        type: string
+        description: Password for MoySklad
+      MOYSKLAD_TOKEN:
+        type: string
+        description: Bearer token for MoySklad API (alternative to login/password)
+    oneOf:
+      - required: [MOYSKLAD_TOKEN]
+      - required: [MOYSKLAD_LOGIN, MOYSKLAD_PASSWORD]
+  commandFunction: |
+    (config) => ({
+      command: "npx",
+      args: ["-y", "@theyahia/moysklad-mcp"],
+      env: {
+        ...(config.MOYSKLAD_TOKEN ? { MOYSKLAD_TOKEN: config.MOYSKLAD_TOKEN } : {}),
+        ...(config.MOYSKLAD_LOGIN ? { MOYSKLAD_LOGIN: config.MOYSKLAD_LOGIN } : {}),
+        ...(config.MOYSKLAD_PASSWORD ? { MOYSKLAD_PASSWORD: config.MOYSKLAD_PASSWORD } : {}),
+      },
+    })

@@ -1,20 +1,29 @@
 {
   "name": "@theyahia/moysklad-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for MoySklad (МойСклад) — products, stock, orders, counterparties.",
+  "version": "2.0.0",
+  "description": "MCP server for MoySklad — products, stock, orders, counterparties, supplies, and reports.",
   "type": "module",
   "main": "dist/index.js",
-  "bin": { "moysklad-mcp": "dist/index.js" },
-  "files": ["dist"],
-  "engines": { "node": ">=18.0.0" },
+  "bin": {
+    "moysklad-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
+    "vitest": "^4.1.2",
     "zod": "^3.24.0"
   },
   "devDependencies": {
@@ -22,11 +31,32 @@
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   },
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "mcpName": "io.github.theYahia/moysklad-mcp",
-  "keywords": ["mcp", "mcp-server", "model-context-protocol", "claude", "ai", "russian-api", "moysklad", "warehouse", "inventory", "products", "orders"],
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude",
+    "ai",
+    "russian-api",
+    "moysklad",
+    "warehouse",
+    "inventory",
+    "products",
+    "orders",
+    "counterparties",
+    "supply",
+    "reports",
+    "russian-mcp"
+  ],
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/theYahia/moysklad-mcp.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theYahia/moysklad-mcp.git"
+  },
   "homepage": "https://github.com/theYahia/moysklad-mcp#readme",
   "author": "Yahia"
 }
