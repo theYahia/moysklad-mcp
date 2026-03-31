@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "moysklad": {
+      "command": "npx",
+      "args": ["-y", "@theyahia/moysklad-mcp"],
+      "env": {
+        "MOYSKLAD_TOKEN": ""
+      }
+    }
+  }
+}
