@@ -1,7 +1,7 @@
 {
   "name": "@theyahia/moysklad-mcp",
-  "version": "2.0.0",
-  "description": "MCP server for MoySklad — products, stock, orders, counterparties, supplies, and reports.",
+  "version": "3.0.0",
+  "description": "MCP server for MoySklad (МойСклад) — 21 tools: products, stock, orders, counterparties, shipments, supplies, stores, organizations, reports, webhooks.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -50,6 +50,8 @@
     "counterparties",
     "supply",
     "reports",
+    "webhooks",
+    "shipments",
     "russian-mcp"
   ],
   "license": "MIT",

@@ -54,6 +54,10 @@ export async function moyskladPut(path: string, body: unknown): Promise<unknown>
   return moyskladRequest("PUT", path, body);
 }
 
+export async function moyskladDelete(path: string): Promise<unknown> {
+  return moyskladRequest("DELETE", path);
+}
+
 async function moyskladRequest(
   method: string,
   path: string,
@@ -79,15 +83,23 @@ async function moyskladRequest(
       });
       clearTimeout(timer);
 
-      if (response.ok) return response.json();
+      if (response.ok) {
+        const text = await response.text();
+        return text ? JSON.parse(text) : { success: true };
+      }
 
       if ((response.status === 429 || response.status >= 500) && attempt < MAX_RETRIES) {
-        const delay = Math.min(1000 * 2 ** (attempt - 1), 8000);
+        const retryAfter = response.headers.get("Retry-After");
+        const delay = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.min(1000 * 2 ** (attempt - 1), 8000);
         console.error(
           `[moysklad-mcp] ${response.status}, retry in ${delay}ms (${attempt}/${MAX_RETRIES})`,
         );
         await new Promise(r => setTimeout(r, delay));
         continue;
+      }
+
+      if (response.status === 401 || response.status === 403) {
+        throw new Error(`MoySklad auth error ${response.status}: check credentials are valid and have required permissions`);
       }
 
       const text = await response.text();

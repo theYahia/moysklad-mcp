@@ -20,6 +20,22 @@ export async function handleGetStock(params: z.infer<typeof getStockSchema>): Pr
   return formatStock(result);
 }
 
+// --- get_stock_by_store ---
+export const getStockByStoreSchema = z.object({
+  search: z.string().optional().describe("Search by product name"),
+  limit: z.number().int().min(1).max(1000).default(25).describe("Number of results"),
+  offset: z.number().int().default(0).describe("Offset for pagination"),
+});
+
+export async function handleGetStockByStore(params: z.infer<typeof getStockByStoreSchema>): Promise<string> {
+  const query = new URLSearchParams();
+  query.set("limit", String(params.limit));
+  query.set("offset", String(params.offset));
+  if (params.search) query.set("search", params.search);
+  const result = await moyskladGet(`/report/stock/bystore?${query.toString()}`);
+  return JSON.stringify(result, null, 2);
+}
+
 function formatStock(raw: unknown): string {
   const data = raw as { meta: { size: number }; rows: Array<Record<string, unknown>> };
   return JSON.stringify({

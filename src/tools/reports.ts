@@ -20,6 +20,26 @@ export async function handleGetProfitReport(params: z.infer<typeof getProfitRepo
   return formatProfitReport(result);
 }
 
+// --- get_sales_report ---
+export const getSalesReportSchema = z.object({
+  limit: z.number().int().min(1).max(1000).default(25).describe("Number of results"),
+  offset: z.number().int().default(0).describe("Offset for pagination"),
+  moment_from: z.string().optional().describe("Start date, ISO 8601 (e.g. 2024-01-01)"),
+  moment_to: z.string().optional().describe("End date, ISO 8601 (e.g. 2024-12-31)"),
+});
+
+export async function handleGetSalesReport(params: z.infer<typeof getSalesReportSchema>): Promise<string> {
+  const query = new URLSearchParams();
+  query.set("limit", String(params.limit));
+  query.set("offset", String(params.offset));
+  const filters: string[] = [];
+  if (params.moment_from) filters.push(`momentFrom=${params.moment_from} 00:00:00`);
+  if (params.moment_to) filters.push(`momentTo=${params.moment_to} 23:59:59`);
+  if (filters.length) query.set("filter", filters.join(";"));
+  const result = await moyskladGet(`/report/sales/byproduct?${query.toString()}`);
+  return JSON.stringify(result, null, 2);
+}
+
 function formatProfitReport(raw: unknown): string {
   const data = raw as { meta: { size: number }; rows: Array<Record<string, unknown>> };
   return JSON.stringify({

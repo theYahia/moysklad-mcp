@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { moyskladGet, moyskladPost } from "../client.js";
+import { moyskladGet, moyskladPost, moyskladPut } from "../client.js";
 
 // --- create_customer_order ---
 export const createCustomerOrderSchema = z.object({
@@ -57,6 +57,30 @@ export async function handleGetOrders(params: z.infer<typeof getOrdersSchema>): 
   if (filters.length) query.set("filter", filters.join(";"));
   const result = await moyskladGet(`/entity/customerorder?${query.toString()}`);
   return formatOrders(result);
+}
+
+// --- get_customer_order ---
+export const getCustomerOrderSchema = z.object({
+  id: z.string().describe("Customer order UUID"),
+});
+
+export async function handleGetCustomerOrder(params: z.infer<typeof getCustomerOrderSchema>): Promise<string> {
+  const result = await moyskladGet(`/entity/customerorder/${params.id}?expand=positions`);
+  return JSON.stringify(result, null, 2);
+}
+
+// --- update_customer_order_status ---
+export const updateCustomerOrderStatusSchema = z.object({
+  id: z.string().describe("Customer order UUID"),
+  state_href: z.string().describe("Meta href of the new state. Get states from /entity/customerorder/metadata"),
+});
+
+export async function handleUpdateCustomerOrderStatus(params: z.infer<typeof updateCustomerOrderStatusSchema>): Promise<string> {
+  const body = {
+    state: { meta: { href: params.state_href, type: "state", mediaType: "application/json" } },
+  };
+  const result = await moyskladPut(`/entity/customerorder/${params.id}`, body);
+  return formatOrder(result);
 }
 
 function formatOrder(raw: unknown): string {

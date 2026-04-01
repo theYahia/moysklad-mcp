@@ -1,6 +1,6 @@
 # @theyahia/moysklad-mcp
 
-MCP server for **MoySklad** warehouse management API. 10 tools for products, stock, orders, counterparties, supplies, and reports.
+MCP server for **MoySklad** (МойСклад) warehouse and CRM management API. 21 tools covering the full order lifecycle: products, stock, counterparties, customer orders, shipments, supplies, warehouses, organizations, reports, and webhooks.
 
 [![npm](https://img.shields.io/npm/v/@theyahia/moysklad-mcp)](https://www.npmjs.com/package/@theyahia/moysklad-mcp)
 [![license](https://img.shields.io/npm/l/@theyahia/moysklad-mcp)](./LICENSE)
@@ -49,20 +49,60 @@ Add to MCP settings:
 }
 ```
 
-## Tools
+## Tools (21)
 
+### Products
 | Tool | Description |
 |------|-------------|
 | `search_products` | Search products by name or article |
 | `get_product` | Get a single product by UUID |
 | `create_product` | Create a new product |
-| `get_stock` | Get current stock/inventory report |
-| `update_prices` | Update sale/buy/min prices for a product |
-| `get_counterparties` | Search counterparties by name or INN |
-| `create_customer_order` | Create a customer order |
-| `get_orders` | Get customer orders with filtering |
-| `get_profit_report` | Profit report by product |
-| `create_supply` | Create an incoming supply |
+| `update_prices` | Update sale/buy/min prices |
+
+### Stock
+| Tool | Description |
+|------|-------------|
+| `get_stock` | Current stock report (quantity, reserve, in-transit) |
+| `get_stock_by_store` | Stock broken down by warehouse |
+
+### Counterparties
+| Tool | Description |
+|------|-------------|
+| `get_counterparties` | Search by name, INN, or phone |
+| `get_counterparty` | Get full counterparty details |
+| `create_counterparty` | Create customer/supplier |
+
+### Customer Orders
+| Tool | Description |
+|------|-------------|
+| `create_customer_order` | Create order with positions |
+| `get_orders` | List orders with filtering and sorting |
+| `get_customer_order` | Get order with expanded positions |
+| `update_customer_order_status` | Change order status |
+
+### Shipments & Supply
+| Tool | Description |
+|------|-------------|
+| `create_demand` | Create shipment linked to order and warehouse |
+| `create_supply` | Create incoming supply (purchase receipt) |
+
+### Reference Data
+| Tool | Description |
+|------|-------------|
+| `list_stores` | List all warehouses |
+| `list_organizations` | List all your legal entities |
+
+### Reports
+| Tool | Description |
+|------|-------------|
+| `get_profit_report` | Profit by product (revenue, cost, margin) |
+| `get_sales_report` | Sales by product (quantity, revenue) |
+
+### Webhooks
+| Tool | Description |
+|------|-------------|
+| `list_webhooks` | List registered webhooks |
+| `create_webhook` | Register a new webhook |
 
 ## Prices
 
@@ -112,6 +152,29 @@ Build a full Russian e-commerce backend with MCP:
 | YooKassa | `@theyahia/yookassa-mcp` | Payments |
 
 Part of the [russian-mcp](https://github.com/theYahia?tab=repositories&q=mcp) series.
+
+## Demo Prompts
+
+**Inventory check:**
+> "Show me all products with low stock (less than 10 units) and their current prices"
+
+**Order workflow:**
+> "Create a customer order for counterparty 'OOO Roga i Kopyta' with 50 units of 'Widget Pro' at 1500 rubles each, then create a shipment from the main warehouse"
+
+**Sales analytics:**
+> "Pull the profit report and tell me which products have the highest margin this month"
+
+## Development
+
+```bash
+npm install
+npm run build
+npm test
+```
+
+## API Reference
+
+Based on [MoySklad API v1.2](https://dev.moysklad.ru/doc/api/remap/1.2/).
 
 ## License
 
