@@ -7,7 +7,40 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run coverage
+
+  node18-compat:
+    # The published runtime supports Node >=18, but the dev/test tooling
+    # (vitest 4) requires Node >=20. On Node 18 we therefore only verify the
+    # shipped code builds and loads (i.e. registers its tools) — not the suite.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --input-type=module -e "import('./dist/index.js').then(m => process.exit(m.allTools.length > 0 ? 0 : 1))"
+
+  audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,5 +49,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - run: npm test
+      # Block only on critical vulnerabilities in shipped (production) deps.
+      # The current high/moderate findings are transitive dependencies of
+      # @modelcontextprotocol/sdk (hono, fast-uri) and are tracked upstream.
+      - run: npm audit --omit=dev --audit-level=critical
