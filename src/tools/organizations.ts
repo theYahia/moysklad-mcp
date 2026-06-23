@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { moyskladGet } from "../client.js";
+import { formatList, listQuery, metaHref } from "../lib.js";
+import type { ToolDef } from "../types.js";
 
 // --- list_organizations ---
 export const listOrganizationsSchema = z.object({
@@ -8,16 +10,21 @@ export const listOrganizationsSchema = z.object({
 });
 
 export async function handleListOrganizations(params: z.infer<typeof listOrganizationsSchema>): Promise<string> {
-  const query = new URLSearchParams();
-  query.set("limit", String(params.limit));
-  query.set("offset", String(params.offset));
-  const result = await moyskladGet(`/entity/organization?${query.toString()}`);
-  const data = result as { meta: { size: number }; rows: Array<Record<string, unknown>> };
-  return JSON.stringify({
-    total: data.meta?.size,
-    organizations: (data.rows ?? []).map((o) => ({
-      id: o.id, name: o.name, inn: o.inn,
-      meta_href: (o.meta as Record<string, unknown>)?.href,
-    })),
-  }, null, 2);
+  const qs = listQuery({ limit: params.limit, offset: params.offset });
+  const result = await moyskladGet(`/entity/organization?${qs}`);
+  return formatList(result, "organizations", (o) => ({
+    id: o.id,
+    name: o.name,
+    inn: o.inn,
+    meta_href: metaHref(o),
+  }));
 }
+
+export const tools: ToolDef[] = [
+  {
+    name: "list_organizations",
+    description: "List all organizations (your legal entities) with names, INN, and meta hrefs.",
+    schema: listOrganizationsSchema,
+    handler: handleListOrganizations,
+  },
+];

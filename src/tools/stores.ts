@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { moyskladGet } from "../client.js";
+import { formatList, listQuery, metaHref } from "../lib.js";
+import type { ToolDef } from "../types.js";
 
 // --- list_stores ---
 export const listStoresSchema = z.object({
@@ -8,16 +10,21 @@ export const listStoresSchema = z.object({
 });
 
 export async function handleListStores(params: z.infer<typeof listStoresSchema>): Promise<string> {
-  const query = new URLSearchParams();
-  query.set("limit", String(params.limit));
-  query.set("offset", String(params.offset));
-  const result = await moyskladGet(`/entity/store?${query.toString()}`);
-  const data = result as { meta: { size: number }; rows: Array<Record<string, unknown>> };
-  return JSON.stringify({
-    total: data.meta?.size,
-    stores: (data.rows ?? []).map((s) => ({
-      id: s.id, name: s.name, address: s.address,
-      meta_href: (s.meta as Record<string, unknown>)?.href,
-    })),
-  }, null, 2);
+  const qs = listQuery({ limit: params.limit, offset: params.offset });
+  const result = await moyskladGet(`/entity/store?${qs}`);
+  return formatList(result, "stores", (s) => ({
+    id: s.id,
+    name: s.name,
+    address: s.address,
+    meta_href: metaHref(s),
+  }));
 }
+
+export const tools: ToolDef[] = [
+  {
+    name: "list_stores",
+    description: "List all warehouses/stores with names, addresses, and meta hrefs.",
+    schema: listStoresSchema,
+    handler: handleListStores,
+  },
+];

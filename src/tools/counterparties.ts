@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { moyskladGet, moyskladPost } from "../client.js";
+import { buildFilter, formatList, json, listQuery } from "../lib.js";
+import type { ToolDef } from "../types.js";
 
-// --- list_counterparties ---
+// --- get_counterparties ---
 export const getCounterpartiesSchema = z.object({
   search: z.string().optional().describe("Search by counterparty name"),
   filter_inn: z.string().optional().describe("Filter by INN (tax ID)"),
@@ -11,26 +13,24 @@ export const getCounterpartiesSchema = z.object({
 });
 
 export async function handleGetCounterparties(params: z.infer<typeof getCounterpartiesSchema>): Promise<string> {
-  const query = new URLSearchParams();
-  query.set("limit", String(params.limit));
-  query.set("offset", String(params.offset));
-  if (params.search) query.set("search", params.search);
-  const filters: string[] = [];
-  if (params.filter_inn) filters.push(`inn=${params.filter_inn}`);
-  if (params.filter_phone) filters.push(`phone=${params.filter_phone}`);
-  if (filters.length) query.set("filter", filters.join(";"));
-  const result = await moyskladGet(`/entity/counterparty?${query.toString()}`);
-  return formatCounterparties(result);
+  const filter = buildFilter([
+    ["inn", params.filter_inn ?? ""],
+    ["phone", params.filter_phone ?? ""],
+  ]);
+  const qs = listQuery({ limit: params.limit, offset: params.offset, search: params.search, filter });
+  const result = await moyskladGet(`/entity/counterparty?${qs}`);
+  return formatList(result, "counterparties", formatCounterpartyRow);
 }
 
 // --- get_counterparty ---
 export const getCounterpartySchema = z.object({
   id: z.string().describe("Counterparty UUID"),
+  raw: z.boolean().optional().describe("Return the full raw MoySklad object instead of the summary"),
 });
 
 export async function handleGetCounterparty(params: z.infer<typeof getCounterpartySchema>): Promise<string> {
   const result = await moyskladGet(`/entity/counterparty/${params.id}`);
-  return JSON.stringify(result, null, 2);
+  return params.raw ? json(result) : json(formatCounterpartyRow((result ?? {}) as Record<string, unknown>));
 }
 
 // --- create_counterparty ---
@@ -50,15 +50,37 @@ export async function handleCreateCounterparty(params: z.infer<typeof createCoun
   if (params.email) body.email = params.email;
   if (params.description) body.description = params.description;
   const result = await moyskladPost("/entity/counterparty", body);
-  return JSON.stringify(result, null, 2);
+  return json(formatCounterpartyRow((result ?? {}) as Record<string, unknown>));
 }
 
-function formatCounterparties(raw: unknown): string {
-  const data = raw as { meta: { size: number }; rows: Array<Record<string, unknown>> };
-  return JSON.stringify({
-    total: data.meta?.size,
-    counterparties: (data.rows ?? []).map((c) => ({
-      id: c.id, name: c.name, phone: c.phone, email: c.email, inn: c.inn, companyType: c.companyType,
-    })),
-  }, null, 2);
+function formatCounterpartyRow(c: Record<string, unknown>): Record<string, unknown> {
+  return {
+    id: c.id,
+    name: c.name,
+    phone: c.phone,
+    email: c.email,
+    inn: c.inn,
+    companyType: c.companyType,
+  };
 }
+
+export const tools: ToolDef[] = [
+  {
+    name: "get_counterparties",
+    description: "Search counterparties (customers/suppliers) by name, INN, or phone.",
+    schema: getCounterpartiesSchema,
+    handler: handleGetCounterparties,
+  },
+  {
+    name: "get_counterparty",
+    description: "Get full details of a counterparty by UUID.",
+    schema: getCounterpartySchema,
+    handler: handleGetCounterparty,
+  },
+  {
+    name: "create_counterparty",
+    description: "Create a new counterparty. Set companyType to 'legal', 'entrepreneur', or 'individual'.",
+    schema: createCounterpartySchema,
+    handler: handleCreateCounterparty,
+  },
+];
