@@ -1,44 +1,49 @@
 ---
 name: warehouse-management
-description: Manage MoySklad warehouse — products, stock, orders, counterparties
-argument-hint: <action> [details]
-allowed-tools:
-  - Bash
-  - Read
+description: Управление складом МойСклад — товары, остатки, заказы, контрагенты, документы
+argument-hint: <действие> [детали]
 ---
 
-# /warehouse-management — MoySklad Operations
+# /warehouse-management — операции в МойСклад
 
-## Algorithm
+## Алгоритм
 
-1. Use `search_products` to find products by name or article
-2. Use `get_stock` to check current inventory levels
-3. Use `get_counterparties` to find customers/suppliers
-4. Use `create_order` to place customer orders
+1. `search_products` или `search_assortment` — найти товары по названию/артикулу.
+2. `get_stock` — проверить текущие остатки; `get_stock_by_store` — по складам.
+3. `get_counterparties` — найти покупателей/поставщиков.
+4. `list_organizations` / `list_stores` — получить meta-href организации и склада (нужны для документов).
+5. Создать документ:
+   - `create_customer_order` — заказ покупателя
+   - `create_demand` — отгрузка
+   - `create_supply` — приёмка
+   - `create_move` — перемещение между складами
+   - `create_enter` / `create_loss` — оприходование / списание
 
-## Important
+## Важно
 
-- All prices from API are in **kopecks** (divide by 100 for rubles)
-- When creating orders, pass prices in **rubles** (auto-converted to kopecks)
+- Цены, которые **возвращают** инструменты, уже в **рублях** (сервер сам конвертирует из копеек).
+- При создании документов цены передаются в **рублях** (конвертируются в копейки автоматически).
+- Документам нужны **meta-href** организации (`list_organizations`), контрагента (`get_counterparties`) и склада (`list_stores`), а не просто UUID.
 
-## Response Format
+## Формат ответа
 
 ```
-## MoySklad Inventory
+## Склад МойСклад
 
-### Products matching "laptop"
-1. Laptop Pro 15 — Article: LP15 — Price: 89,990 RUB — Stock: 42
+### Товары по запросу «laptop»
+1. Laptop Pro 15 — артикул: LP15 — цена: 89 990 ₽ — остаток: 42
 2. ...
 
-### Stock Summary
-Total items: 156
-Low stock (<5): 3 products
+### Сводка остатков
+Всего позиций: 156
+Критический остаток (<5): 3 товара
 ```
 
-## Examples
+## Примеры
 
 ```
-/warehouse-management search products "laptop"
-/warehouse-management check stock
-/warehouse-management find counterparty "Romashka"
+/warehouse-management найди товары "laptop"
+/warehouse-management проверь остатки
+/warehouse-management найди контрагента "Ромашка"
+/warehouse-management перемести 10 шт LP15 со склада A на склад B
 ```
