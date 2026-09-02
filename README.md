@@ -1,9 +1,11 @@
-# @theyahia/moysklad-mcp
+# MCP-сервер для МойСклад — 60 инструментов для ИИ-агента: товары, склад, заказы, финансы
 
-MCP server for **MoySklad** (МойСклад) warehouse / ERP / CRM API. **60 tools** covering the full trade and warehouse lifecycle: products & catalog, stock, counterparties, customer & purchase orders, shipments, supplies, stock moves, inventory, write-offs/enters, returns, invoices, payments & cash, reports, audit log, and webhooks.
+Если вы искали, как подключить МойСклад к Claude или другому ИИ-агенту, — этот сервер закрывает весь торгово-складской цикл через JSON API 1.2: каталог и цены, остатки по складам, контрагенты, заказы покупателей и поставщикам, отгрузки, приёмки, перемещения, инвентаризации, списания, возвраты, счета, платежи и касса, отчёты по прибыли и оборотам, аудит и вебхуки. Спрашиваете «сколько футболок свободно к продаже» или «какая маржа по каждому товару за август» — получаете таблицу с цифрами, а не выгрузку в Excel. Цены во всех инструментах в рублях (перевод в копейки, которых требует API МойСклад, сервер делает сам), лимит запросов соблюдается автоматически.
 
 [![npm](https://img.shields.io/npm/v/@theyahia/moysklad-mcp)](https://www.npmjs.com/package/@theyahia/moysklad-mcp)
 [![license](https://img.shields.io/npm/l/@theyahia/moysklad-mcp)](./LICENSE)
+
+![Демонстрация: вопрос «сколько футболок на складе и сколько из них в резерве» — агент вызывает get_stock и отвечает таблицей остатков и резервов](https://raw.githubusercontent.com/theYahia/WWmcp/main/servers/moysklad/assets/demo.svg)
 
 Part of **[WWmcp](https://github.com/theYahia/WWmcp)** — a set of MCP servers for emerging markets.
 
