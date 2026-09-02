@@ -5,7 +5,7 @@ MCP server for **MoySklad** (МойСклад) warehouse / ERP / CRM API. **60 t
 [![npm](https://img.shields.io/npm/v/@theyahia/moysklad-mcp)](https://www.npmjs.com/package/@theyahia/moysklad-mcp)
 [![license](https://img.shields.io/npm/l/@theyahia/moysklad-mcp)](./LICENSE)
 
-Part of **WWmcp** — a set of MCP servers for emerging markets — and the [russian-mcp](https://github.com/theYahia?tab=repositories&q=mcp) series.
+Part of **[WWmcp](https://github.com/theYahia/WWmcp)** — a set of MCP servers for emerging markets.
 
 ## Quick Start
 
@@ -231,3 +231,7 @@ Based on [MoySklad JSON API 1.2](https://dev.moysklad.ru/doc/api/remap/1.2/).
 ## License
 
 MIT
+
+---
+
+Часть [WWmcp](https://github.com/theYahia/WWmcp) · Telegram: [@vhodvai](https://t.me/vhodvai)
