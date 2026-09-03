@@ -7,13 +7,13 @@
 
 ![Демонстрация: вопрос «сколько футболок на складе и сколько из них в резерве» — агент вызывает get_stock и отвечает таблицей остатков и резервов](https://raw.githubusercontent.com/theYahia/WWmcp/main/servers/moysklad/assets/demo.svg)
 
-Part of **[WWmcp](https://github.com/theYahia/WWmcp)** — a set of MCP servers for emerging markets.
+Часть **[WWmcp](https://github.com/theYahia/WWmcp)** — набора MCP-серверов для развивающихся рынков.
 
-## Quick Start
+## Быстрый старт
 
 ### Claude Desktop
 
-Add to your `claude_desktop_config.json`:
+Добавьте в `claude_desktop_config.json`:
 
 ```json
 {
@@ -29,7 +29,7 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-To use login/password instead of a token, replace the `env` block with:
+Чтобы использовать логин и пароль вместо токена, замените блок `env` на:
 
 ```json
 "env": { "MOYSKLAD_LOGIN": "you@example.com", "MOYSKLAD_PASSWORD": "your-password" }
@@ -43,7 +43,7 @@ claude mcp add moysklad --env MOYSKLAD_TOKEN=your-bearer-token -- npx -y @theyah
 
 ### Cursor / Windsurf
 
-Add to MCP settings:
+Добавьте в настройки MCP:
 
 ```json
 {
@@ -55,182 +55,182 @@ Add to MCP settings:
 }
 ```
 
-## Auth
+## Авторизация
 
-| Variable                               | Description              |
-| -------------------------------------- | ------------------------ |
-| `MOYSKLAD_TOKEN`                       | Bearer token (preferred) |
-| `MOYSKLAD_LOGIN` + `MOYSKLAD_PASSWORD` | HTTP Basic auth          |
+| Переменная                             | Описание                    |
+| -------------------------------------- | --------------------------- |
+| `MOYSKLAD_TOKEN`                       | Bearer-токен (предпочтительно) |
+| `MOYSKLAD_LOGIN` + `MOYSKLAD_PASSWORD` | HTTP Basic-авторизация      |
 
-Get a token in MoySklad: **Settings → Users → Access tokens** (`POST /security/token` also works with Basic auth). Generating a new token revokes the previous one.
+Токен выдаётся в МоёмСкладе: **Настройки → Пользователи → Токены доступа** (также работает `POST /security/token` с Basic-авторизацией). Генерация нового токена отзывает предыдущий.
 
-**Required permissions:** the user/token needs access to the entities you intend to use. Read tools need view rights; create/update tools need edit rights for that document type. Webhooks and some reports require a paid MoySklad plan.
+**Нужные права:** у пользователя или токена должен быть доступ к тем сущностям, с которыми вы работаете. Читающим инструментам нужны права просмотра, создающим и изменяющим — права редактирования соответствующего типа документов. Вебхуки и часть отчётов требуют платного тарифа МойСклад.
 
-## Prices
+## Цены
 
-The MoySklad API stores money in **kopecks** (1 ruble = 100 kopecks). This server converts automatically:
+API МойСклад хранит деньги в **копейках** (1 рубль = 100 копеек). Сервер конвертирует автоматически:
 
-- **Input**: pass prices/amounts in **rubles** (e.g. `1500.50`)
-- **Output**: prices/amounts are returned in **rubles**
-- (The `get_dashboard` report is passed through verbatim, so its money values are still in kopecks.)
+- **На вход**: передавайте цены и суммы **в рублях** (например, `1500.50`)
+- **На выход**: цены и суммы возвращаются **в рублях**
+- (Отчёт `get_dashboard` проксируется как есть, поэтому денежные значения в нём остаются в копейках.)
 
-When a product carries a sale price, MoySklad requires a **price type**. The server attaches your account's default price type automatically (from `list_price_types`); pass `price_type_href` to choose a specific one.
+Если у товара есть цена продажи, МойСклад требует **тип цены**. Сервер сам подставляет тип цены по умолчанию из вашего аккаунта (берёт из `list_price_types`); чтобы выбрать конкретный, передайте `price_type_href`.
 
-## Tools (60)
+## Инструменты (60)
 
-### Products & catalog
+### Товары и каталог
 
-| Tool                                                     | Description                                                 |
-| -------------------------------------------------------- | ----------------------------------------------------------- |
-| `search_products`                                        | Search products by name or article                          |
-| `get_product`                                            | Get a product by UUID (`raw` for the full object)           |
-| `create_product`                                         | Create a product (price type attached automatically)        |
-| `update_prices`                                          | Update sale/buy/min prices                                  |
-| `search_assortment`                                      | Unified search across products, variants, services, bundles |
-| `list_price_types`                                       | List price types (first is the default)                     |
-| `search_variants` / `search_bundles` / `search_services` | Search modifications / kits / services                      |
-| `create_service`                                         | Create a service                                            |
+| Инструмент                                               | Описание                                                     |
+| -------------------------------------------------------- | ------------------------------------------------------------ |
+| `search_products`                                        | Поиск товаров по названию или артикулу                       |
+| `get_product`                                            | Товар по UUID (`raw` — полный объект)                        |
+| `create_product`                                         | Создать товар (тип цены подставляется автоматически)         |
+| `update_prices`                                          | Обновить цены продажи, закупки и минимальную                 |
+| `search_assortment`                                      | Сквозной поиск по товарам, модификациям, услугам и комплектам |
+| `list_price_types`                                       | Типы цен (первый — по умолчанию)                             |
+| `search_variants` / `search_bundles` / `search_services` | Поиск модификаций / комплектов / услуг                        |
+| `create_service`                                         | Создать услугу                                               |
 
-### Stock
+### Остатки
 
-| Tool                 | Description                                   |
-| -------------------- | --------------------------------------------- |
-| `get_stock`          | Current stock (quantity, reserve, in-transit) |
-| `get_stock_by_store` | Stock broken down by warehouse                |
-| `get_stock_current`  | Fast current-stock snapshot                   |
+| Инструмент           | Описание                                        |
+| -------------------- | ----------------------------------------------- |
+| `get_stock`          | Текущие остатки (количество, резерв, в пути)    |
+| `get_stock_by_store` | Остатки в разрезе складов                       |
+| `get_stock_current`  | Быстрый срез текущих остатков                   |
 
-### Counterparties
+### Контрагенты
 
-| Tool                  | Description                                  |
-| --------------------- | -------------------------------------------- |
-| `get_counterparties`  | Search by name, INN, or phone                |
-| `get_counterparty`    | Get full details (`raw` for the full object) |
-| `create_counterparty` | Create customer/supplier                     |
+| Инструмент            | Описание                                    |
+| --------------------- | ------------------------------------------- |
+| `get_counterparties`  | Поиск по названию, ИНН или телефону         |
+| `get_counterparty`    | Полная карточка (`raw` — полный объект)     |
+| `create_counterparty` | Создать покупателя или поставщика           |
 
-### Orders & shipments
+### Заказы и отгрузки
 
-| Tool                                                                                           | Description                                        |
-| ---------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `create_customer_order` / `get_orders` / `get_customer_order` / `update_customer_order_status` | Customer order lifecycle                           |
-| `create_purchase_order` / `get_purchase_orders`                                                | Purchase orders to suppliers                       |
-| `create_demand`                                                                                | Shipment (demand) linked to an order and warehouse |
-| `create_supply`                                                                                | Incoming supply (purchase receipt)                 |
-| `create_sales_return` / `create_purchase_return`                                               | Returns from customers / to suppliers              |
+| Инструмент                                                                                     | Описание                                            |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `create_customer_order` / `get_orders` / `get_customer_order` / `update_customer_order_status` | Жизненный цикл заказа покупателя                    |
+| `create_purchase_order` / `get_purchase_orders`                                                | Заказы поставщикам                                  |
+| `create_demand`                                                                                | Отгрузка, привязанная к заказу и складу             |
+| `create_supply`                                                                                | Приёмка (поступление от поставщика)                 |
+| `create_sales_return` / `create_purchase_return`                                               | Возвраты от покупателей и поставщикам               |
 
-### Warehouse documents
+### Складские документы
 
-| Tool                                   | Description                       |
-| -------------------------------------- | --------------------------------- |
-| `create_move` / `get_moves`            | Stock transfer between warehouses |
-| `create_enter` / `get_enters`          | Stock enter (оприходование)       |
-| `create_loss` / `get_losses`           | Write-off (списание)              |
-| `create_inventory` / `get_inventories` | Inventory count (инвентаризация)  |
+| Инструмент                             | Описание                        |
+| -------------------------------------- | ------------------------------- |
+| `create_move` / `get_moves`            | Перемещение между складами      |
+| `create_enter` / `get_enters`          | Оприходование                   |
+| `create_loss` / `get_losses`           | Списание                        |
+| `create_inventory` / `get_inventories` | Инвентаризация                  |
 
-### Finance
+### Финансы
 
-| Tool                                                            | Description                       |
-| --------------------------------------------------------------- | --------------------------------- |
-| `create_payment_in` / `create_payment_out`                      | Incoming / outgoing bank payments |
-| `create_cash_in` / `create_cash_out`                            | Cash receipt / expense orders     |
-| `create_invoice_out` / `create_invoice_in` / `get_invoices_out` | Sales / supplier invoices         |
+| Инструмент                                                      | Описание                             |
+| --------------------------------------------------------------- | ------------------------------------ |
+| `create_payment_in` / `create_payment_out`                      | Входящие и исходящие банковские платежи |
+| `create_cash_in` / `create_cash_out`                            | Приходные и расходные кассовые ордера |
+| `create_invoice_out` / `create_invoice_in` / `get_invoices_out` | Счета покупателям и от поставщиков   |
 
-### Reports
+### Отчёты
 
-| Tool                | Description                               |
-| ------------------- | ----------------------------------------- |
-| `get_profit_report` | Profit by product (revenue, cost, margin) |
-| `get_sales_report`  | Sales by product (quantity, revenue)      |
-| `get_dashboard`     | Day/week/month dashboard metrics          |
-| `get_turnover`      | Product turnover over a period            |
-| `get_money_report`  | Current money balances by account/cash    |
+| Инструмент          | Описание                                        |
+| ------------------- | ----------------------------------------------- |
+| `get_profit_report` | Прибыль по товарам (выручка, себестоимость, маржа) |
+| `get_sales_report`  | Продажи по товарам (количество, выручка)        |
+| `get_dashboard`     | Показатели дашборда за день, неделю, месяц      |
+| `get_turnover`      | Оборачиваемость товаров за период               |
+| `get_money_report`  | Текущие остатки денег по счетам и кассам        |
 
-### Reference & audit
+### Справочники и аудит
 
-| Tool                                                          | Description                                                        |
-| ------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `list_stores` / `list_organizations`                          | Warehouses / legal entities                                        |
-| `list_employees` / `list_currencies` / `list_product_folders` | Reference data                                                     |
-| `get_metadata`                                                | Entity metadata (states, attributes) — find order-state hrefs here |
-| `get_audit` / `get_entity_audit`                              | Account event log / single-entity history                          |
+| Инструмент                                                    | Описание                                                              |
+| ------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `list_stores` / `list_organizations`                          | Склады и юрлица                                                       |
+| `list_employees` / `list_currencies` / `list_product_folders` | Справочные данные                                                     |
+| `get_metadata`                                                | Метаданные сущностей (статусы, атрибуты) — здесь берутся href статусов заказа |
+| `get_audit` / `get_entity_audit`                              | Журнал событий аккаунта и история одной сущности                      |
 
-### Webhooks & generic
+### Вебхуки и универсальные инструменты
 
-| Tool                                                                     | Description                                            |
-| ------------------------------------------------------------------------ | ------------------------------------------------------ |
-| `list_webhooks` / `create_webhook` / `update_webhook` / `delete_webhook` | Manage webhooks (CREATE/UPDATE/DELETE/PROCESSED)       |
-| `get_documents` / `get_document`                                         | Generic list/get for any entity type not covered above |
+| Инструмент                                                               | Описание                                                    |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `list_webhooks` / `create_webhook` / `update_webhook` / `delete_webhook` | Управление вебхуками (CREATE/UPDATE/DELETE/PROCESSED)       |
+| `get_documents` / `get_document`                                         | Универсальные список и получение для любого типа сущностей, не покрытого выше |
 
-## HTTP Transport
+## HTTP-транспорт
 
 ```bash
 HTTP_PORT=3000 npx @theyahia/moysklad-mcp
-# or
+# или
 npx @theyahia/moysklad-mcp --http 3000
 ```
 
-Endpoints: `POST /mcp` (JSON-RPC), `GET /health` (status). CORS is **off by default** — the HTTP endpoint acts on your MoySklad token, so set `MOYSKLAD_HTTP_CORS_ORIGIN` only if a trusted browser origin needs it.
+Эндпоинты: `POST /mcp` (JSON-RPC), `GET /health` (статус). CORS **выключен по умолчанию** — HTTP-эндпоинт действует от имени вашего токена МойСклад, поэтому задавайте `MOYSKLAD_HTTP_CORS_ORIGIN` только если доверенному браузерному origin это действительно нужно.
 
-## Configuration (env)
+## Конфигурация (переменные окружения)
 
-| Variable                               | Default | Description                                      |
-| -------------------------------------- | ------- | ------------------------------------------------ |
-| `MOYSKLAD_TOKEN`                       | —       | Bearer token                                     |
-| `MOYSKLAD_LOGIN` / `MOYSKLAD_PASSWORD` | —       | Basic auth                                       |
-| `MOYSKLAD_RATE_BUCKET`                 | `20`    | Requests allowed per 3-second window             |
-| `MOYSKLAD_MAX_CONCURRENT`              | `5`     | Max parallel requests (MoySklad allows 5/user)   |
-| `MOYSKLAD_HTTP_CORS_ORIGIN`            | —       | Allowed CORS origin for the HTTP transport       |
-| `HTTP_PORT`                            | —       | Start the Streamable HTTP transport on this port |
+| Переменная                             | По умолчанию | Описание                                            |
+| -------------------------------------- | ------- | ---------------------------------------------------- |
+| `MOYSKLAD_TOKEN`                       | —       | Bearer-токен                                         |
+| `MOYSKLAD_LOGIN` / `MOYSKLAD_PASSWORD` | —       | Basic-авторизация                                    |
+| `MOYSKLAD_RATE_BUCKET`                 | `20`    | Сколько запросов разрешено в трёхсекундном окне      |
+| `MOYSKLAD_MAX_CONCURRENT`              | `5`     | Максимум параллельных запросов (МойСклад допускает 5 на пользователя) |
+| `MOYSKLAD_HTTP_CORS_ORIGIN`            | —       | Разрешённый CORS-origin для HTTP-транспорта          |
+| `HTTP_PORT`                            | —       | Запустить транспорт Streamable HTTP на этом порту    |
 
-## Rate Limiting
+## Ограничение частоты запросов
 
-MoySklad uses a weight-per-3-seconds model (≈45 units for a solution token, fewer for login/password, and the `get_stock`/`get_stock_by_store` reports cost 5 units each). The built-in limiter is a token bucket charged by request weight, kept **conservative by default** (`MOYSKLAD_RATE_BUCKET=20`) because the API can temporarily disable access after repeated `429`s. It retries `429`/`5xx` with backoff, honoring MoySklad's `X-Lognex-Retry-After` header. Solution-token users can raise the bucket toward 45.
+МойСклад считает «вес за 3 секунды» (≈45 единиц для токена решения, меньше для логина с паролем; отчёты `get_stock` и `get_stock_by_store` стоят по 5 единиц каждый). Встроенный лимитер — token bucket, который списывается по весу запроса, и по умолчанию он **консервативен** (`MOYSKLAD_RATE_BUCKET=20`), потому что API может временно отключить доступ после серии `429`. Повторы на `429`/`5xx` идут с задержкой и учитывают заголовок `X-Lognex-Retry-After`. С токеном решения корзину можно поднять ближе к 45.
 
-## Troubleshooting
+## Решение проблем
 
-| Symptom                      | Cause / fix                                                                                                                                           |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Auth not configured`        | Set `MOYSKLAD_TOKEN` (or `MOYSKLAD_LOGIN` + `MOYSKLAD_PASSWORD`).                                                                                     |
-| `auth error 401/403`         | Token invalid/expired or the user lacks rights for that entity. A new token revokes old ones.                                                         |
-| `MoySklad HTTP 412 …`        | A required field is missing (e.g. an outgoing payment may need an expense item — pass `expense_item_href`). The error message includes the parameter. |
-| Many `429` / slow            | Lower request volume or rely on the built-in limiter; raise `MOYSKLAD_RATE_BUCKET` only with a solution token.                                        |
-| `HTTP 415`                   | The runtime isn't sending gzip — use Node ≥18 (its `fetch` handles gzip automatically).                                                               |
-| Webhooks / some reports fail | Require a paid MoySklad plan.                                                                                                                         |
+| Симптом                      | Причина и что делать                                                                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Auth not configured`        | Задайте `MOYSKLAD_TOKEN` (или `MOYSKLAD_LOGIN` + `MOYSKLAD_PASSWORD`).                                                                                 |
+| `auth error 401/403`         | Токен недействителен или истёк, либо у пользователя нет прав на сущность. Новый токен отзывает старые.                                                  |
+| `MoySklad HTTP 412 …`        | Не хватает обязательного поля (например, исходящему платежу может требоваться статья расходов — передайте `expense_item_href`). Параметр указан в тексте ошибки. |
+| Много `429` / медленно       | Снизьте объём запросов или положитесь на встроенный лимитер; поднимайте `MOYSKLAD_RATE_BUCKET` только с токеном решения.                                |
+| `HTTP 415`                   | Среда выполнения не отправляет gzip — используйте Node ≥18 (его `fetch` делает gzip автоматически).                                                     |
+| Вебхуки и часть отчётов не работают | Требуют платного тарифа МойСклад.                                                                                                                |
 
-## E-commerce Stack
+## E-commerce-стек
 
-| Service  | MCP Server               | What it does                |
+| Сервис   | MCP-сервер               | Что делает                  |
 | -------- | ------------------------ | --------------------------- |
-| MoySklad | `@theyahia/moysklad-mcp` | Warehouse, products, orders |
-| CDEK     | `@theyahia/cdek-mcp`     | Delivery, tracking          |
-| DaData   | `@theyahia/dadata-mcp`   | Address validation          |
-| YooKassa | `@theyahia/yookassa-mcp` | Payments                    |
+| МойСклад | `@theyahia/moysklad-mcp` | Склад, товары, заказы       |
+| СДЭК     | `@theyahia/cdek-mcp`     | Доставка, трекинг           |
+| DaData   | `@theyahia/dadata-mcp`   | Проверка адресов            |
+| ЮKassa   | `@theyahia/yookassa-mcp` | Платежи                     |
 
-## Demo Prompts
+## Демо-промпты
 
-> "Show me all products with low stock (less than 10 units) and their current prices"
+> «Покажи все товары с низким остатком (меньше 10 штук) и их текущие цены»
 
-> "Create a customer order for counterparty 'OOO Roga i Kopyta' with 50 units of 'Widget Pro' at 1500 rubles each, then create a shipment from the main warehouse"
+> «Создай заказ покупателя для контрагента „ООО Рога и Копыта“ на 50 штук „Widget Pro“ по 1500 рублей, потом сделай отгрузку с основного склада»
 
-> "Move 20 units of SKU LP15 from the main warehouse to the store, then pull the profit report for this month"
+> «Перемести 20 штук SKU LP15 с основного склада в магазин, затем подними отчёт по прибыли за этот месяц»
 
-## Development
+## Разработка
 
 ```bash
-npm install        # installs deps + git hooks (husky)
+npm install        # зависимости + git-хуки (husky)
 npm run build      # tsc -> dist/
 npm run lint       # eslint
 npm run typecheck  # tsc --noEmit
-npm test           # vitest (requires Node >=20)
-npm run coverage   # vitest with coverage
+npm test           # vitest (требуется Node >=20)
+npm run coverage   # vitest с покрытием
 ```
 
-The published runtime supports **Node ≥18**; the test tooling requires **Node ≥20**.
+Опубликованный рантайм поддерживает **Node ≥18**; тестовая оснастка требует **Node ≥20**.
 
-## API Reference
+## Справочник API
 
-Based on [MoySklad JSON API 1.2](https://dev.moysklad.ru/doc/api/remap/1.2/).
+Основан на [JSON API 1.2 МойСклад](https://dev.moysklad.ru/doc/api/remap/1.2/).
 
-## License
+## Лицензия
 
 MIT
 
