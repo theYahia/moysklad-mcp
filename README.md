@@ -1,17 +1,3 @@
-> ## 🗄 Репозиторий заархивирован
->
-> Разработка переехала в **[theYahia/WWmcp](https://github.com/theYahia/WWmcp)** — монорепозиторий MCP-серверов для незападных API: СНГ, MENA, Африка, LATAM, Юго-Восточная Азия. Общее ядро `@theyahia/mcp-core`, единый CI, единый релизный конвейер.
->
-> Актуальная версия того, что лежало здесь: [`servers/moysklad/`](https://github.com/theYahia/WWmcp/tree/main/servers/moysklad)
->
-> Пакет в npm прежний — [`@theyahia/moysklad-mcp`](https://www.npmjs.com/package/@theyahia/moysklad-mcp), ставится и работает как раньше.
-> Здесь больше ничего не обновляется. Задачи и pull request'ы — в WWmcp.
->
-> **Archived — development moved to [theYahia/WWmcp](https://github.com/theYahia/WWmcp),** a monorepo of MCP servers for non-Western APIs.
-> The current version of this package now lives at [`servers/moysklad/`](https://github.com/theYahia/WWmcp/tree/main/servers/moysklad).
-> The npm package [`@theyahia/moysklad-mcp`](https://www.npmjs.com/package/@theyahia/moysklad-mcp) is unchanged.
-> Please open issues and pull requests there.
-
 # MCP-сервер для МойСклад — 60 инструментов для ИИ-агента: товары, склад, заказы, финансы
 
 Если вы искали, как подключить МойСклад к Claude или другому ИИ-агенту, — этот сервер закрывает весь торгово-складской цикл через JSON API 1.2: каталог и цены, остатки по складам, контрагенты, заказы покупателей и поставщикам, отгрузки, приёмки, перемещения, инвентаризации, списания, возвраты, счета, платежи и касса, отчёты по прибыли и оборотам, аудит и вебхуки. Спрашиваете «сколько футболок свободно к продаже» или «какая маржа по каждому товару за август» — получаете таблицу с цифрами, а не выгрузку в Excel. Цены во всех инструментах в рублях (перевод в копейки, которых требует API МойСклад, сервер делает сам), лимит запросов соблюдается автоматически.
